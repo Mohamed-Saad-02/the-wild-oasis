@@ -3,7 +3,7 @@ import styled from "styled-components";
 
 import { useMoveBack } from "../../hooks/useMoveBack";
 import { formatCurrency } from "../../utils/helpers";
-import { useCheckin } from "./useCheckIn";
+import { useCheckin } from "./useCheckin";
 
 import BookingDataBox from "../../features/bookings/BookingDataBox";
 import Row from "../../ui/Row";
