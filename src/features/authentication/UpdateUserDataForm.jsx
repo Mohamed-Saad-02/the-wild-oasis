@@ -22,7 +22,7 @@ function UpdateUserDataForm() {
   const [fullName, setFullName] = useState(currentFullName);
   const [avatar, setAvatar] = useState(null);
 
-  const oldImageName = currentAvatar.split("/").at(-1);
+  const oldImageName = currentAvatar?.split("/").at(-1);
 
   const handleSubmit = (e) => {
     e.preventDefault();
