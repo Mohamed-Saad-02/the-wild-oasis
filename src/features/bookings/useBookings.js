@@ -6,11 +6,9 @@ export function useBookings() {
   const [searchParams] = useSearchParams();
 
   // FILTER
-  const filterValue = searchParams.get("status");
+  const status = searchParams.get("status");
   const filter =
-    !filterValue || filterValue === "all"
-      ? null
-      : { field: "status", value: filterValue };
+    !status || status === "all" ? null : { field: "status", value: status };
 
   // SORT
 
@@ -25,7 +23,7 @@ export function useBookings() {
   // QUERY
   const {
     isLoading,
-    data: { bookings, count } = {},
+    data: { data: bookings = [], metadata: { total: count } = {} } = {},
     error,
     isPlaceholderData,
   } = useQuery({

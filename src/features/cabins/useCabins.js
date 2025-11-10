@@ -12,7 +12,7 @@ function useCabins() {
   // QUERY
   const {
     isLoading,
-    data: { data: cabins, count } = {},
+    data: { data: cabins = [], metadata: { total: count } = {} } = {},
     error,
     isPlaceholderData,
   } = useQuery({

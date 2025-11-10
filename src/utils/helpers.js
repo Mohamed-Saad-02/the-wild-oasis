@@ -28,4 +28,3 @@ export const formatCurrency = (value) =>
     value
   );
 
-export const getImageNameFromUrl = (url) => url.split("/").pop();

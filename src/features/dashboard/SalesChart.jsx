@@ -41,10 +41,10 @@ function SalesChart({ bookings, numDays }) {
     return {
       label: format(date, "MMM dd"),
       totalSales: bookings
-        .filter((booking) => isSameDay(date, booking.created_at))
+        .filter((booking) => isSameDay(date, new Date(booking.createdAt)))
         .reduce((acc, curr) => acc + curr.totalPrice, 0),
       extrasSales: bookings
-        .filter((booking) => isSameDay(date, booking.created_at))
+        .filter((booking) => isSameDay(date, new Date(booking.createdAt)))
         .reduce((acc, curr) => acc + curr.extrasPrice, 0),
     };
   });

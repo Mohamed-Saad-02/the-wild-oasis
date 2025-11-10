@@ -1,26 +1,31 @@
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import Button from "../../ui/Button";
 import Form from "../../ui/Form";
 import FormRow from "../../ui/FormRow";
 import Input from "../../ui/Input";
+import Select from "../../ui/Select";
 import { useSignup } from "./useSignup";
 
 function SignupForm() {
   const { isPending, signup } = useSignup();
-  const { register, formState, handleSubmit, getValues, reset } = useForm();
+  const { register, formState, handleSubmit, getValues, reset, control } = useForm({
+    defaultValues: {
+      role: "admin",
+    },
+  });
   const { errors } = formState;
 
-  const onSubmit = ({ fullName, email, password }) =>
-    signup({ fullName, email, password }, { onSettled: reset });
+  const onSubmit = ({ name, email, password, role }) =>
+    signup({ name, email, password, role }, { onSettled: reset });
 
   return (
     <Form onSubmit={handleSubmit(onSubmit)}>
-      <FormRow label="Full name" error={errors?.fullName?.message}>
+      <FormRow label="Full name" error={errors?.name?.message}>
         <Input
           type="text"
-          id="fullName"
+          id="name"
           disabled={isPending}
-          {...register("fullName", { required: "This Filed is required" })}
+          {...register("name", { required: "This Filed is required" })}
         />
       </FormRow>
 
@@ -69,6 +74,25 @@ function SignupForm() {
             validate: (value) =>
               value === getValues().password || "Password need to match",
           })}
+        />
+      </FormRow>
+
+      <FormRow label="Role" error={errors?.role?.message}>
+        <Controller
+          name="role"
+          control={control}
+          rules={{ required: "This field is required" }}
+          render={({ field }) => (
+            <Select
+              value={field.value}
+              onChange={field.onChange}
+              options={[
+                { value: "user", label: "User" },
+                { value: "admin", label: "Admin" },
+              ]}
+              disabled={isPending}
+            />
+          )}
         />
       </FormRow>
 

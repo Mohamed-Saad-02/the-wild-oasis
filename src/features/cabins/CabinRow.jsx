@@ -1,16 +1,16 @@
-import styled from "styled-components";
 import { HiPencil, HiSquare2Stack, HiTrash } from "react-icons/hi2";
+import styled from "styled-components";
 
-import { formatCurrency, getImageNameFromUrl } from "../../utils/helpers";
+import { formatCurrency } from "../../utils/helpers";
 
-import CreateCabinForm from "./CreateCabinForm";
-import useDeleteCabin from "./useDeleteCabin";
-import useCreateCabin from "./useCreateCabin";
-import Modal from "../../ui/Modal";
-import ConfirmDelete from "../../ui/ConfirmDelete";
-import Table from "../../ui/Table";
-import Menus from "../../ui/Menus";
 import useDetectItem from "../../hooks/useDetectItem";
+import ConfirmDelete from "../../ui/ConfirmDelete";
+import Menus from "../../ui/Menus";
+import Modal from "../../ui/Modal";
+import Table from "../../ui/Table";
+import CreateCabinForm from "./CreateCabinForm";
+import useCreateCabin from "./useCreateCabin";
+import useDeleteCabin from "./useDeleteCabin";
 
 const Img = styled.img`
   display: block;
@@ -49,24 +49,28 @@ function CabinRow({ cabin = {}, count }) {
     description,
   } = cabin;
 
-  const imageName = getImageNameFromUrl(image);
 
   const { isDeleting, deleteCabin } = useDeleteCabin();
   const { isCreating, createCabin } = useCreateCabin();
   const { handleDetect } = useDetectItem(count, "cabins");
 
-  const handleDuplicateCabin = () =>
+  const handleDuplicateCabin = async () => {
+
+    const oldImage = await fetch(image);
+    const oldImageBlob = await oldImage.blob();
+
     createCabin({
       name: `Copy of ${name}`,
-      image,
+      image: oldImageBlob,
       regularPrice,
       maxCapacity,
       discount,
       description,
     });
+  }
 
   const handleDeleteCabin = () =>
-    deleteCabin({ cabinId, imageName }, { onSuccess: handleDetect });
+    deleteCabin(cabinId, { onSuccess: handleDetect });
 
   return (
     <Table.Row>
@@ -115,7 +119,16 @@ function CabinRow({ cabin = {}, count }) {
             </Menus.List>
 
             <Modal.Window name="edit">
-              <CreateCabinForm cabinToEdit={cabin} />
+              <CreateCabinForm cabinToEdit={
+                {
+                  id: cabinId,
+                  name,
+                  regularPrice,
+                  maxCapacity,
+                  discount,
+                  description,
+                }
+              } />
             </Modal.Window>
 
             <Modal.Window name="delete">

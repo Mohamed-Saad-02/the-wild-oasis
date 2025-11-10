@@ -7,12 +7,11 @@ export function useSignup() {
     mutationFn: signupApi,
     onSuccess: () => {
       toast.success(
-        "Account successfully created! Please verify the new account from the user's email address"
+        "Account successfully created!"
       );
     },
     onError: (error) => {
-      console.log("Error: ", error.message);
-      toast.error(error.message || "An error occurred during signup");
+      toast.error(error.response.data.message || "An error occurred during signup");
     },
   });
 

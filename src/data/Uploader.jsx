@@ -1,12 +1,14 @@
-import { useState } from "react";
 import { isFuture, isPast, isToday } from "date-fns";
-import supabase from "../services/supabase";
+import { useState } from "react";
 import Button from "../ui/Button";
 import { subtractDates } from "../utils/helpers";
 
+import axiosInstance from "../utils/axiosInstance";
 import { bookings } from "./data-bookings";
 import { cabins } from "./data-cabins";
 import { guests } from "./data-guests";
+import { getCabins } from "../services/apiCabins";
+
 
 // const originalSettings = {
 //   minBookingLength: 3,
@@ -16,42 +18,59 @@ import { guests } from "./data-guests";
 // };
 
 async function deleteGuests() {
-  const { error } = await supabase.from("guests").delete().gt("id", 0);
-  if (error) console.log(error.message);
+   const response = await axiosInstance.delete("guests");
+   return response.data;
 }
 
 async function deleteCabins() {
-  const { error } = await supabase.from("cabins").delete().gt("id", 0);
-  if (error) console.log(error.message);
+  const response = await axiosInstance.delete("cabins");
+  return response.data;
 }
 
 async function deleteBookings() {
-  const { error } = await supabase.from("bookings").delete().gt("id", 0);
-  if (error) console.log(error.message);
+    const response = await axiosInstance.delete("bookings");
+  return response.data;
 }
 
 async function createGuests() {
-  const { error } = await supabase.from("guests").insert(guests);
-  if (error) console.log(error.message);
+  const response = await axiosInstance.post("guests/bulk", guests);
+  return response.data;
 }
 
 async function createCabins() {
-  const { error } = await supabase.from("cabins").insert(cabins);
-  if (error) console.log(error.message);
+  await Promise.all(
+    cabins.map(async (cabin) => {
+      const formData = new FormData();
+
+      formData.append("name", cabin.name);
+      formData.append("maxCapacity", cabin.maxCapacity);
+      formData.append("regularPrice", cabin.regularPrice);
+      formData.append("discount", cabin.discount);
+      formData.append("description", cabin.description);
+
+      // ✅ نحول الصورة من URL إلى Blob
+      const res = await fetch(cabin.image);
+      const blob = await res.blob();
+      console.log(blob);
+      formData.append("image", blob);
+
+
+      const response = await axiosInstance.post("cabins", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      return response.data;
+    })
+  );
 }
 
+
 async function createBookings() {
-  // Bookings need a guestId and a cabinId. We can't tell Supabase IDs for each object, it will calculate them on its own. So it might be different for different people, especially after multiple uploads. Therefore, we need to first get all guestIds and cabinIds, and then replace the original IDs in the booking data with the actual ones from the DB
-  const { data: guestsIds } = await supabase
-    .from("guests")
-    .select("id")
-    .order("id");
-  const allGuestIds = guestsIds.map((cabin) => cabin.id);
-  const { data: cabinsIds } = await supabase
-    .from("cabins")
-    .select("id")
-    .order("id");
-  const allCabinIds = cabinsIds.map((cabin) => cabin.id);
+  const guestsResponse = await axiosInstance.get("guests");
+  const allGuestIds = guestsResponse.data.map((guest) => guest.id);
+    
+  const cabinsResponse = await getCabins({ page: 1 });
+  const allCabinIds = cabinsResponse.data.map((cabin) => cabin.id);
 
   const finalBookings = bookings.map((booking) => {
     // Here relying on the order of cabins, as they don't have and ID yet
@@ -96,8 +115,8 @@ async function createBookings() {
 
   console.log(finalBookings);
 
-  const { error } = await supabase.from("bookings").insert(finalBookings);
-  if (error) console.log(error.message);
+  const response = await axiosInstance.post("bookings/bulk", finalBookings);
+  return response.data;
 }
 
 function Uploader() {
@@ -105,10 +124,9 @@ function Uploader() {
 
   async function uploadAll() {
     setIsLoading(true);
-    // Bookings need to be deleted FIRST
-    await deleteBookings();
-    await deleteGuests();
     await deleteCabins();
+    await deleteGuests();
+    await deleteBookings();
 
     // Bookings need to be created LAST
     await createGuests();

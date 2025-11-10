@@ -14,21 +14,21 @@ function UpdateUserDataForm() {
   const {
     user: {
       email,
-      user_metadata: { fullName: currentFullName, avatar: currentAvatar },
+      name, 
+      avatar: currentAvatar,
     },
   } = useUser();
 
   const { isUpdating, updateUser } = useUpdateUser();
-  const [fullName, setFullName] = useState(currentFullName);
+  const [fullName, setFullName] = useState(name);
   const [avatar, setAvatar] = useState(null);
 
-  const oldImageName = currentAvatar?.split("/").at(-1);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!fullName) return;
     updateUser(
-      { fullName, avatar, currentAvatar: oldImageName },
+      { name: fullName, avatar, currentAvatar },
       { onSuccess: () => setAvatar(null) }
     );
   };

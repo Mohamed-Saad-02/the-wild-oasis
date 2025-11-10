@@ -1,6 +1,5 @@
 import { useForm } from "react-hook-form";
 
-import { getImageNameFromUrl } from "../../utils/helpers";
 
 import useCreateCabin from "./useCreateCabin";
 import useEditCabin from "./useEditCabin";
@@ -16,10 +15,8 @@ function CreateCabinForm({ cabinToEdit = {}, onCloseModal }) {
   const { id: editId, ...editValues } = cabinToEdit;
   const isEditSession = !!editId;
 
-  const imageName = getImageNameFromUrl(editValues.image ?? "");
-
   const { isCreating, createCabin } = useCreateCabin();
-  const { isEditing, editCabin } = useEditCabin(imageName);
+  const { isEditing, editCabin } = useEditCabin();
   const isWorking = isCreating || isEditing;
 
   const { register, handleSubmit, reset, getValues, formState } = useForm({
@@ -31,11 +28,11 @@ function CreateCabinForm({ cabinToEdit = {}, onCloseModal }) {
     const image =
       typeof data.image === "object" && data.image.length > 0
         ? data.image[0]
-        : cabinToEdit.image;
+        : undefined;
 
     if (isEditSession)
       editCabin(
-        { newCabinData: { ...data, image }, id: editId },
+        { id: editId, newCabinData: { ...data, image } },
         {
           onSuccess: () => {
             reset();

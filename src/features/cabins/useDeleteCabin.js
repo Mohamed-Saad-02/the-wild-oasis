@@ -6,7 +6,7 @@ function useDeleteCabin() {
   const queryClient = useQueryClient();
 
   const { isPending: isDeleting, mutate: deleteCabin } = useMutation({
-    mutationFn: ({ cabinId: id, imageName }) => deleteCabinApi(id, imageName),
+    mutationFn: deleteCabinApi,
 
     onSuccess: () => {
       toast.success("Cabin successfully deleted");

@@ -10,12 +10,18 @@ export function useLogin() {
   const { mutate: login, isPending } = useMutation({
     mutationFn: ({ email, password }) => loginApi({ email, password }),
     onSuccess: (user) => {
-      queryClient.setQueryData(["user"], user.user);
-      navigate("/", { replace: true });
+      queryClient.setQueryData(["user"], user);
+      if (user.role === "admin") {
+        localStorage.setItem("token", user.token);
+        navigate("/", { replace: true });
+      } else {
+        toast.error("You are not authorized to access this page");
+        localStorage.removeItem("token");
+        queryClient.clear();
+      }
     },
     onError: (error) => {
-      console.log("ERROR", error.message);
-      toast.error("Provided email or password are incorrect");
+      toast.error(error.response.data.message || "Provided email or password are incorrect");
     },
   });
 

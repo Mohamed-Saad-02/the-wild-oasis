@@ -54,7 +54,7 @@ const Guest = styled.div`
 `;
 
 function TodayItem({ activity }) {
-  const { id, status, guests, numNights } = activity;
+  const { id, status, guest, numNights } = activity;
 
   return (
     <StyledTodayItem>
@@ -63,8 +63,8 @@ function TodayItem({ activity }) {
         {status === "checked-in" && <Tag $type="blue">Departing</Tag>}
 
         <div>
-          <Flag src={guests.countryFlag} alt={`Flag of ${guests.country}`} />
-          <Guest>{guests.fullName}</Guest>
+          <Flag src={guest.countryFlag} alt={`Flag of ${guest.country}`} />
+          <Guest>{guest.fullName}</Guest>
         </div>
       </div>
       <div>

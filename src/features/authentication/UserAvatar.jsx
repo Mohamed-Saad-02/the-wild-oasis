@@ -12,6 +12,10 @@ const StyledUserAvatar = styled.div`
   font-weight: 500;
   font-size: 1.4rem;
   color: var(--color-grey-600);
+  
+  @media (min-width: 576px) {
+    margin-left: auto;
+  }
 
   @media (max-width: 575px) {
     order: 1;
@@ -72,23 +76,24 @@ function UserAvatar() {
   const [isPopupAvatar, setIsPopupAvatar] = useState(false);
 
   const { user } = useUser();
-  const { avatar, fullName } = user?.user_metadata;
+  const { avatar, name } = user;
 
+  
   const closePopupAvatar = () => setIsPopupAvatar(false);
-
+  
   const ref = useOutsideClick(closePopupAvatar);
-
-  if (!fullName) return;
+  
+  if (!name) return;
 
   return (
     <>
       <StyledUserAvatar>
         <Avatar
           src={avatar || "default-user.jpg"}
-          alt={`Avatar of ${fullName}`}
+          alt={`Avatar of ${name}`}
           onClick={() => avatar && setIsPopupAvatar((show) => !show)}
         />
-        <span>{fullName}</span>
+        <span>{name}</span>
       </StyledUserAvatar>
 
       {isPopupAvatar &&
@@ -96,7 +101,7 @@ function UserAvatar() {
           <Overlay>
             <StyledPopupAvatar ref={ref}>
               <HiOutlineX onClick={closePopupAvatar} />
-              <PopupAvatar src={avatar} alt={`Avatar of ${fullName}`} />
+              <PopupAvatar src={avatar} alt={`Avatar of ${name}`} />
             </StyledPopupAvatar>
           </Overlay>,
 

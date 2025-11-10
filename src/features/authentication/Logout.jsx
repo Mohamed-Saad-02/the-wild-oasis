@@ -1,15 +1,23 @@
 import { HiArrowRightOnRectangle } from "react-icons/hi2";
 
+import { useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 import ButtonIcon from "../../ui/ButtonIcon";
-import { useLogout } from "./useLogout";
-import SpinnerMini from "../../ui/SpinnerMini";
 
 function Logout() {
-  const { isPending, logout } = useLogout();
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    queryClient.clear();
+    navigate("/login", { replace: true });
+  };
 
   return (
-    <ButtonIcon onClick={logout} disabled={isPending}>
-      {isPending ? <SpinnerMini /> : <HiArrowRightOnRectangle />}
+    <ButtonIcon onClick={handleLogout}>
+       <HiArrowRightOnRectangle />
     </ButtonIcon>
   );
 }

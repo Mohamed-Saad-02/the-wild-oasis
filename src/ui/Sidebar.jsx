@@ -2,6 +2,7 @@ import styled from "styled-components";
 import Logo from "./Logo";
 import MainNav from "./MainNav";
 import { useTheme } from "../context/ThemeContext";
+import Uploader from "../data/Uploader";
 
 const StyledSidebar = styled.aside`
   @media (min-width: 992px) {
@@ -78,6 +79,7 @@ function Sidebar() {
       <Logo />
       <Overlay className="overlay" onClick={handleActiveSidebar}></Overlay>
       <MainNav isActiveSidebar={isActiveSidebar} dispatch={dispatch} />
+      <Uploader />
     </StyledSidebar>
   );
 }
